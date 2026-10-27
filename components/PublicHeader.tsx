@@ -9,9 +9,9 @@ export default function PublicHeader() {
           <Image
             src="/logo.png"
             alt="2days Ventures"
-            width={140}
-            height={75}
-            className="h-12 w-auto"
+            width={360}
+            height={92}
+            className="h-16 w-auto"
             priority
           />
         </Link>
