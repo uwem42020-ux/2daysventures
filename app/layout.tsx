@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const siteUrl = "https://2daysventures.com.ng";
+const siteUrl = "https://www.2daysventures.com.ng";
 
 export const metadata: Metadata = {
   title: "2days Ventures Limited",
