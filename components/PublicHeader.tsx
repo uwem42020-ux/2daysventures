@@ -19,7 +19,6 @@ export default function PublicHeader() {
             alt="2days Ventures"
             className="h-12 sm:h-14 md:h-16 w-auto"
             priority
-            placeholder="blur"
           />
         </Link>
 
