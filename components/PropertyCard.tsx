@@ -22,8 +22,9 @@ export default function PropertyCard({ property }: { property: Property }) {
             src={mainImage}
             alt={property.title}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
-            unoptimized
+            placeholder="empty"
           />
         </div>
         <div className="p-4">

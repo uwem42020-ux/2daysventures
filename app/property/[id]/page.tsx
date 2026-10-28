@@ -7,7 +7,7 @@ export default async function PropertyDetail({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;               // ← await params (required in Next.js 15+)
+  const { id } = await params;
   const { data: property, error } = await supabase
     .from("properties")
     .select("*")
@@ -32,8 +32,9 @@ export default async function PropertyDetail({
                 src={img}
                 alt={`${property.title} - Image ${i + 1}`}
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover rounded-lg"
-                unoptimized
+                placeholder="empty"
               />
             </div>
           ))}
@@ -43,10 +44,14 @@ export default async function PropertyDetail({
       {/* Description & Sales Info */}
       <div className="prose max-w-none">
         <h2 className="text-xl font-bold mt-6">Description</h2>
-        <p className="text-gray-700 whitespace-pre-line">{property.description}</p>
+        <p className="text-gray-700 whitespace-pre-line">
+          {property.description}
+        </p>
 
         <h2 className="text-xl font-bold mt-6">Sales Information</h2>
-        <p className="text-gray-700 whitespace-pre-line">{property.sales_info}</p>
+        <p className="text-gray-700 whitespace-pre-line">
+          {property.sales_info}
+        </p>
 
         {property.features?.length > 0 && (
           <>
