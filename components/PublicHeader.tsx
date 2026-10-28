@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import logo from "@/public/logo.png";
 
 export default function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -12,15 +13,13 @@ export default function PublicHeader() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo */}
         <Link href="/" onClick={closeMenu} className="flex-shrink-0">
           <Image
-            src="/logo.png"
+            src={logo}
             alt="2days Ventures"
-            width={360}
-            height={92}
             className="h-12 sm:h-14 md:h-16 w-auto"
             priority
+            placeholder="blur"
           />
         </Link>
 
@@ -52,9 +51,17 @@ export default function PublicHeader() {
             strokeWidth={2}
           >
             {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
           </svg>
         </button>
