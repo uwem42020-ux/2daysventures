@@ -8,6 +8,7 @@ interface Property {
   location: string;
   images: string[];
   size?: string;
+  source_platform?: string;
 }
 
 export default function PropertyCard({ property }: { property: Property }) {
@@ -16,7 +17,12 @@ export default function PropertyCard({ property }: { property: Property }) {
 
   return (
     <Link href={`/property/${property.id}`} className="block group">
-      <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+      <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 relative">
+        {property.source_platform && (
+          <div className="absolute top-2 right-2 z-10 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
+            {property.source_platform}
+          </div>
+        )}
         <div className="relative h-48 overflow-hidden">
           <Image
             src={mainImage}
@@ -24,7 +30,6 @@ export default function PropertyCard({ property }: { property: Property }) {
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-300"
-            placeholder="empty"
           />
         </div>
         <div className="p-4">

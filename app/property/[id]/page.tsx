@@ -34,7 +34,6 @@ export default async function PropertyDetail({
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover rounded-lg"
-                placeholder="empty"
               />
             </div>
           ))}
@@ -71,9 +70,40 @@ export default async function PropertyDetail({
               <a
                 href={property.company_website}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-600 underline"
               >
                 Visit Website
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Source Attribution */}
+        {property.source_platform && (
+          <div className="mt-6 border-t pt-4 bg-blue-50 rounded-lg p-4">
+            <p className="text-sm font-semibold text-blue-800 mb-2">
+              📌 Listing Source
+            </p>
+            <p className="text-sm text-gray-700">
+              This listing was originally posted on{" "}
+              <strong>{property.source_platform}</strong>
+              {property.source_listing_id && (
+                <span className="text-gray-500">
+                  {" "}
+                  (ID: {property.source_listing_id})
+                </span>
+              )}
+              .
+            </p>
+            {property.source_url && (
+              <a
+                href={property.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 text-sm text-blue-600 underline hover:text-blue-800"
+              >
+                View original listing on {property.source_platform} →
               </a>
             )}
           </div>

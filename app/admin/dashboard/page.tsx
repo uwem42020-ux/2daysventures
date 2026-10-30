@@ -16,6 +16,9 @@ interface Property {
   sales_info?: string;
   features?: string[];
   images?: string[];
+  source_platform?: string;
+  source_url?: string;
+  source_listing_id?: string;
   created_at: string;
 }
 
@@ -26,7 +29,7 @@ export default function AdminDashboard() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [properties, setProperties] = useState<Property[]>([]);
 
-  // Form state for ADD
+  // Add form
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -37,11 +40,14 @@ export default function AdminDashboard() {
     company_website: "",
     sales_info: "",
     features: "",
+    source_platform: "",
+    source_url: "",
+    source_listing_id: "",
   });
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Edit modal state
+  // Edit
   const [editing, setEditing] = useState<Property | null>(null);
   const [editForm, setEditForm] = useState({
     title: "",
@@ -53,6 +59,9 @@ export default function AdminDashboard() {
     company_website: "",
     sales_info: "",
     features: "",
+    source_platform: "",
+    source_url: "",
+    source_listing_id: "",
   });
   const [editImageFiles, setEditImageFiles] = useState<File[]>([]);
   const editFileInputRef = useRef<HTMLInputElement>(null);
@@ -79,24 +88,23 @@ export default function AdminDashboard() {
     checkAuth();
   }, [router, fetchProperties]);
 
-  // ---- Handle ADD form changes ----
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ---- Handle EDIT form changes ----
   const handleEditChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  // ---- Upload images (used by both ADD and EDIT) ----
   const uploadImages = async (files: File[]): Promise<string[]> => {
     const urls: string[] = [];
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const accessToken = session?.access_token;
     const uploadUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/property-images/`;
 
@@ -109,7 +117,8 @@ export default function AdminDashboard() {
         xhr.open("POST", fullUrl, true);
         xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
         xhr.timeout = 60000;
-        xhr.ontimeout = () => reject(new Error("Upload timed out – network too slow"));
+        xhr.ontimeout = () =>
+          reject(new Error("Upload timed out – network too slow"));
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
             const percent = Math.round((event.loaded / event.total) * 100);
@@ -120,21 +129,21 @@ export default function AdminDashboard() {
           if (xhr.status >= 200 && xhr.status < 300) resolve();
           else reject(new Error(`Upload failed with status ${xhr.status}`));
         };
-        xhr.onerror = () => reject(new Error("Network error – check your connection"));
+        xhr.onerror = () =>
+          reject(new Error("Network error – check your connection"));
         const formData = new FormData();
         formData.append("file", file);
         xhr.send(formData);
       });
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("property-images")
-        .getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("property-images").getPublicUrl(fileName);
       urls.push(publicUrl);
     }
     return urls;
   };
 
-  // ---- ADD property ----
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setUploading(true);
@@ -171,13 +180,26 @@ export default function AdminDashboard() {
       sales_info: form.sales_info,
       features: featuresArray,
       images: imageUrls,
+      source_platform: form.source_platform || null,
+      source_url: form.source_url || null,
+      source_listing_id: form.source_listing_id || null,
     });
 
     if (!error) {
       alert("Property posted!");
       setForm({
-        title: "", description: "", price: "", location: "", size: "",
-        company_name: "", company_website: "", sales_info: "", features: "",
+        title: "",
+        description: "",
+        price: "",
+        location: "",
+        size: "",
+        company_name: "",
+        company_website: "",
+        sales_info: "",
+        features: "",
+        source_platform: "",
+        source_url: "",
+        source_listing_id: "",
       });
       setImageFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -188,7 +210,6 @@ export default function AdminDashboard() {
     setUploading(false);
   };
 
-  // ---- DELETE property ----
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this property?")) return;
     const { error } = await supabase.from("properties").delete().eq("id", id);
@@ -199,7 +220,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // ---- Open EDIT modal ----
   const openEdit = (property: Property) => {
     setEditing(property);
     setEditForm({
@@ -212,12 +232,14 @@ export default function AdminDashboard() {
       company_website: property.company_website || "",
       sales_info: property.sales_info || "",
       features: property.features?.join(", ") || "",
+      source_platform: property.source_platform || "",
+      source_url: property.source_url || "",
+      source_listing_id: property.source_listing_id || "",
     });
     setEditImageFiles([]);
     if (editFileInputRef.current) editFileInputRef.current.value = "";
   };
 
-  // ---- SAVE edit ----
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editing) return;
@@ -225,8 +247,6 @@ export default function AdminDashboard() {
     setUploadProgress(0);
 
     let newImageUrls: string[] = [];
-
-    // If new images are selected, upload them (replace entire array)
     if (editImageFiles.length > 0) {
       try {
         newImageUrls = await uploadImages(editImageFiles);
@@ -252,11 +272,12 @@ export default function AdminDashboard() {
       company_website: editForm.company_website,
       sales_info: editForm.sales_info,
       features: featuresArray,
+      source_platform: editForm.source_platform || null,
+      source_url: editForm.source_url || null,
+      source_listing_id: editForm.source_listing_id || null,
     };
 
-    if (newImageUrls.length > 0) {
-      updateData.images = newImageUrls;
-    } // else keep old images
+    if (newImageUrls.length > 0) updateData.images = newImageUrls;
 
     const { error } = await supabase
       .from("properties")
@@ -264,9 +285,9 @@ export default function AdminDashboard() {
       .eq("id", editing.id);
 
     if (!error) {
-      alert("Property updated!");
       setEditing(null);
       fetchProperties();
+      alert("Property updated!");
     } else {
       alert("Update error: " + error.message);
     }
@@ -283,7 +304,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-5xl mx-auto space-y-10">
-        {/* ADD Property Form */}
+        {/* ADD FORM */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Add New Property</h1>
@@ -335,6 +356,45 @@ export default function AdminDashboard() {
                 <label className="block text-sm font-medium">Features (comma separated)</label>
                 <input name="features" onChange={handleChange} value={form.features} className="w-full p-2 border rounded" />
               </div>
+
+              {/* Source fields */}
+              <div className="col-span-2 pt-4 border-t">
+                <h3 className="text-lg font-semibold mb-3">Source Attribution (optional)</h3>
+                <p className="text-sm text-gray-500 mb-3">
+                  Fill these if the listing comes from another platform (e.g., PropertyPro, Nigeria Property Centre).
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Source Platform</label>
+                <input
+                  name="source_platform"
+                  onChange={handleChange}
+                  value={form.source_platform}
+                  placeholder="e.g., PropertyPro.ng"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Source Listing ID</label>
+                <input
+                  name="source_listing_id"
+                  onChange={handleChange}
+                  value={form.source_listing_id}
+                  placeholder="e.g., PP-12345"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium">Source URL</label>
+                <input
+                  name="source_url"
+                  onChange={handleChange}
+                  value={form.source_url}
+                  placeholder="https://..."
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
               <div className="col-span-2">
                 <label className="block text-sm font-medium">Upload Images</label>
                 <input
@@ -358,7 +418,7 @@ export default function AdminDashboard() {
           </form>
         </div>
 
-        {/* Property List */}
+        {/* LIST */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold mb-4">All Properties</h2>
           {properties.length === 0 && <p className="text-gray-500">No properties yet.</p>}
@@ -368,14 +428,13 @@ export default function AdminDashboard() {
                 <div>
                   <p className="font-medium">{property.title}</p>
                   <p className="text-sm text-gray-600">{property.location} – {property.price}</p>
+                  {property.source_platform && (
+                    <p className="text-xs text-gray-400">Source: {property.source_platform}</p>
+                  )}
                 </div>
                 <div className="flex space-x-3">
-                  <button onClick={() => openEdit(property)} className="text-blue-600 hover:underline text-sm">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDelete(property.id)} className="text-red-600 hover:underline text-sm">
-                    Delete
-                  </button>
+                  <button onClick={() => openEdit(property)} className="text-blue-600 hover:underline text-sm">Edit</button>
+                  <button onClick={() => handleDelete(property.id)} className="text-red-600 hover:underline text-sm">Delete</button>
                 </div>
               </div>
             ))}
@@ -429,7 +488,24 @@ export default function AdminDashboard() {
                   <label className="block text-sm font-medium">Features (comma separated)</label>
                   <input name="features" value={editForm.features} onChange={handleEditChange} className="w-full p-2 border rounded" />
                 </div>
-                {/* Show existing images */}
+
+                {/* Source fields */}
+                <div className="col-span-2 pt-4 border-t">
+                  <h3 className="text-lg font-semibold mb-3">Source Attribution</h3>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Source Platform</label>
+                  <input name="source_platform" value={editForm.source_platform} onChange={handleEditChange} className="w-full p-2 border rounded" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Source Listing ID</label>
+                  <input name="source_listing_id" value={editForm.source_listing_id} onChange={handleEditChange} className="w-full p-2 border rounded" />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium">Source URL</label>
+                  <input name="source_url" value={editForm.source_url} onChange={handleEditChange} className="w-full p-2 border rounded" />
+                </div>
+
                 {editing.images && editing.images.length > 0 && (
                   <div className="col-span-2">
                     <p className="text-sm font-medium mb-1">Current Images</p>
@@ -442,13 +518,7 @@ export default function AdminDashboard() {
                 )}
                 <div className="col-span-2">
                   <label className="block text-sm font-medium">Upload New Images (replaces all)</label>
-                  <input
-                    type="file"
-                    multiple
-                    ref={editFileInputRef}
-                    onChange={(e) => setEditImageFiles(Array.from(e.target.files || []))}
-                    className="w-full text-sm"
-                  />
+                  <input type="file" multiple ref={editFileInputRef} onChange={(e) => setEditImageFiles(Array.from(e.target.files || []))} className="w-full text-sm" />
                   {uploading && (
                     <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
                       <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }} />
