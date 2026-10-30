@@ -1,101 +1,52 @@
-import { supabase } from "@/lib/supabaseClient";
-import { notFound } from "next/navigation";
-import PropertyGallery from "@/components/PropertyGallery";
+import Image from "next/image";
+import Link from "next/link";
 
-export default async function PropertyDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const { data: property, error } = await supabase
-    .from("properties")
-    .select("*")
-    .eq("id", id)
-    .single();
+interface Property {
+  id: string;
+  title: string;
+  price: string;
+  location: string;
+  images: string[];
+  size?: string;
+  source_platform?: string;
+}
 
-  if (error || !property) notFound();
+export default function PropertyCard({ property }: { property: Property }) {
+  const mainImage =
+    property.images?.[0] || "https://placehold.co/600x400?text=No+Image";
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">{property.title}</h1>
-      <p className="text-2xl text-blue-600 font-bold mb-4">{property.price}</p>
-      <p className="text-gray-600 mb-4">{property.location}</p>
-      {property.size && <p className="text-gray-600">Size: {property.size}</p>}
-
-      {/* Image Slider */}
-      <div className="my-8">
-        <PropertyGallery images={property.images || []} title={property.title} />
-      </div>
-
-      {/* Description & Sales Info */}
-      <div className="prose max-w-none">
-        <h2 className="text-xl font-bold mt-6">Description</h2>
-        <p className="text-gray-700 whitespace-pre-line">
-          {property.description}
-        </p>
-
-        <h2 className="text-xl font-bold mt-6">Sales Information</h2>
-        <p className="text-gray-700 whitespace-pre-line">
-          {property.sales_info}
-        </p>
-
-        {property.features?.length > 0 && (
-          <>
-            <h2 className="text-xl font-bold mt-6">Features</h2>
-            <ul className="list-disc list-inside text-gray-700">
-              {property.features.map((f: string, i: number) => (
-                <li key={i}>{f}</li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {property.company_name && (
-          <div className="mt-6 border-t pt-4">
-            <p className="font-semibold">Company: {property.company_name}</p>
-            {property.company_website && (
-              <a
-                href={property.company_website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
-              >
-                Visit Website
-              </a>
-            )}
-          </div>
-        )}
-
+    <Link href={`/property/${property.id}`} className="block group">
+      <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 relative">
         {property.source_platform && (
-          <div className="mt-6 border-t pt-4 bg-blue-50 rounded-lg p-4">
-            <p className="text-sm font-semibold text-blue-800 mb-2">
-              📌 Listing Source
-            </p>
-            <p className="text-sm text-gray-700">
-              This listing was originally posted on{" "}
-              <strong>{property.source_platform}</strong>
-              {property.source_listing_id && (
-                <span className="text-gray-500">
-                  {" "}
-                  (ID: {property.source_listing_id})
-                </span>
-              )}
-              .
-            </p>
-            {property.source_url && (
-              <a
-                href={property.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-2 text-sm text-blue-600 underline hover:text-blue-800"
-              >
-                View original listing on {property.source_platform} →
-              </a>
-            )}
+          <div className="absolute top-2 right-2 z-10 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md">
+            {property.source_platform}
           </div>
         )}
+        <div className="relative h-32 sm:h-48 overflow-hidden">
+          <Image
+            src={mainImage}
+            alt={property.title}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <div className="p-2 sm:p-4">
+          <h3 className="text-sm sm:text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
+            {property.title}
+          </h3>
+          <p className="text-gray-500 text-xs sm:text-sm truncate">
+            {property.location}
+          </p>
+          <p className="text-base sm:text-xl font-bold text-blue-600 mt-1 sm:mt-2 break-words">
+            {property.price}
+          </p>
+          {property.size && (
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">{property.size}</p>
+          )}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }
