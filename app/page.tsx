@@ -12,13 +12,14 @@ interface Property {
   location: string;
   images: string[];
   size?: string;
+  source_listing_id?: string;
 }
 
 export default async function Home() {
   const { data: properties } = await supabase
     .from("properties")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("source_listing_id", { ascending: false, nullsFirst: false });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -26,7 +27,7 @@ export default async function Home() {
       <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
         <h1 className="text-3xl font-bold mb-8">Available Properties</h1>
         {properties && properties.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {properties.map((property: Property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
