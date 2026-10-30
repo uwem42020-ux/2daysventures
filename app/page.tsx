@@ -26,18 +26,19 @@ export default async function Home() {
     <div className="min-h-screen flex flex-col">
       <PublicHeader />
       <main className="flex-1 w-full">
-        {/* Banner */}
-        <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96">
+        {/* Banner - uses object-contain so the whole image is always visible */}
+        <div className="relative w-full bg-gray-50">
           <Image
             src="https://pyggfgzeaglpqjplrmyu.supabase.co/storage/v1/object/public/Banner/file_00000000c2c081f48d0006b04584575b.png"
             alt="2days Ventures Banner"
-            fill
-            className="object-cover"
+            width={2048}
+            height={768}
+            className="w-full h-auto object-contain"
             priority
           />
         </div>
 
-        {/* Properties Grid */}
+        {/* Properties Grid - removed the logo/heading entirely */}
         <div className="max-w-7xl mx-auto px-4 py-8">
           {properties && properties.length > 0 ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
