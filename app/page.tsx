@@ -23,13 +23,13 @@ export default async function Home() {
     .order("sort_order", { ascending: true });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <PublicHeader />
       <main className="flex-1 w-full">
         
         {/* Banner Container with curved edges and margins */}
         <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
-          <div className="relative w-full rounded-2xl overflow-hidden shadow-lg bg-gray-50">
+          <div className="relative w-full rounded-2xl overflow-hidden shadow-lg bg-white">
             <Image
               src="https://pyggfgzeaglpqjplrmyu.supabase.co/storage/v1/object/public/Banner/file_00000000c2c081f48d0006b04584575b.png"
               alt="2days Ventures Banner"
