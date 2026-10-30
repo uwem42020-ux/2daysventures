@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 const siteUrl = "https://www.2daysventures.com.ng";
@@ -31,6 +31,10 @@ export const metadata: Metadata = {
       "Premium real estate properties, land, and houses for sale in Nigeria.",
     images: [`${siteUrl}/og-image.png`],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#2563eb",
 };
 
 export default function RootLayout({
