@@ -10,15 +10,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "images.propertypro.ng",
-      },
-      {
-        protocol: "https",
-        hostname: "images.nigeriapropertycentre.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.privateproperty.com.ng",
+        hostname: "images.unsplash.com",
       },
     ],
   },
