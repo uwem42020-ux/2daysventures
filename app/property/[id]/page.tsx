@@ -1,9 +1,6 @@
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 import { supabase } from "@/lib/supabaseClient";
-import Image from "next/image";
 import { notFound } from "next/navigation";
+import PropertyGallery from "@/components/PropertyGallery";
 
 export default async function PropertyDetail({
   params,
@@ -26,22 +23,10 @@ export default async function PropertyDetail({
       <p className="text-gray-600 mb-4">{property.location}</p>
       {property.size && <p className="text-gray-600">Size: {property.size}</p>}
 
-      {/* Property Images */}
-      {property.images?.length > 0 && (
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          {property.images.map((img: string, i: number) => (
-            <div key={i} className="relative h-64">
-              <Image
-                src={img}
-                alt={`${property.title} - Image ${i + 1}`}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover rounded-lg"
-              />
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Image Slider */}
+      <div className="my-8">
+        <PropertyGallery images={property.images || []} title={property.title} />
+      </div>
 
       {/* Description & Sales Info */}
       <div className="prose max-w-none">
@@ -82,7 +67,6 @@ export default async function PropertyDetail({
           </div>
         )}
 
-        {/* Source Attribution */}
         {property.source_platform && (
           <div className="mt-6 border-t pt-4 bg-blue-50 rounded-lg p-4">
             <p className="text-sm font-semibold text-blue-800 mb-2">
